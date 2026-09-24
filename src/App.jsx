@@ -7,13 +7,14 @@ import Player from './components/Player';
 import KeyDialog from './components/KeyDialog';
 import { useFavorites } from './hooks/useFavorites';
 import { getItem, setItem } from './lib/storage';
+import { YOUTUBE_API_KEY } from './lib/youtube';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('search');
   const [items, setItems] = useState([]);
   const [recommended] = useState([]); // 추천 리스트 데이터 소스는 준비 중
   const [selectedId, setSelectedId] = useState(null);
-  const [apiKey, setApiKey] = useState(() => getItem('yt_api_key', ''));
+  const [apiKey, setApiKey] = useState(() => getItem('yt_api_key', '') || YOUTUBE_API_KEY);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { favorites, isFav, toggleFavorite } = useFavorites();

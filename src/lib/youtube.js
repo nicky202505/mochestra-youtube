@@ -1,4 +1,9 @@
 // 링크나 11자리 영상 ID면 바로 재생
+export const YOUTUBE_API_KEY = 'AIzaSyBH7VJfusjy07rJDNgQ58kkZh-XqX2HA64';
+
+const searchCache = new Map();
+const pendingSearches = new Map();
+
 export function parseVideoId(text) {
   const s = text.trim();
   if (/^[\w-]{11}$/.test(s)) return s;
@@ -12,7 +17,11 @@ function decode(s) {
   return t.value;
 }
 
-export async function searchYouTube(query, apiKey) {
+export async function searchYouTube(query, apiKey = YOUTUBE_API_KEY) {
+  const cacheKey = query.trim().toLocaleLowerCase();
+  if (searchCache.has(cacheKey)) return searchCache.get(cacheKey);
+  if (pendingSearches.has(cacheKey)) return pendingSearches.get(cacheKey);
+
   const url = new URL('https://www.googleapis.com/youtube/v3/search');
   url.search = new URLSearchParams({
     part: 'snippet',
@@ -22,13 +31,21 @@ export async function searchYouTube(query, apiKey) {
     key: apiKey,
     regionCode: 'KR',
   });
-  const res = await fetch(url);
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.items.map((v) => ({
-    id: v.id.videoId,
-    title: decode(v.snippet.title),
-    channel: decode(v.snippet.channelTitle),
-    thumb: v.snippet.thumbnails.medium?.url || v.snippet.thumbnails.default.url,
-  }));
+  const request = fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.error) throw new Error(data.error.message);
+      const results = data.items.map((v) => ({
+        id: v.id.videoId,
+        title: decode(v.snippet.title),
+        channel: decode(v.snippet.channelTitle),
+        thumb: v.snippet.thumbnails.medium?.url || v.snippet.thumbnails.default.url,
+      }));
+      searchCache.set(cacheKey, results);
+      return results;
+    })
+    .finally(() => pendingSearches.delete(cacheKey));
+
+  pendingSearches.set(cacheKey, request);
+  return request;
 }
