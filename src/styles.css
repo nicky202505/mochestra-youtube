@@ -1,0 +1,265 @@
+:root {
+  --bg: #1e1e1e;
+  --frame: #3b3230;
+  --pill: #fff8ef;
+  --pill-text: #2b2522;
+  --placeholder: #b5aca4;
+  --player-bg: #463c3a;
+  --player-border: #8a7f3a;
+  --accent: #e6c84a;
+  --fav: #4b3ddc;
+  --row-h: clamp(42px, 6vh, 56px);
+  --row-gap: clamp(8px, 1.4vh, 12px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(12px, 2vw, 24px) clamp(10px, 2vw, 16px);
+}
+/* iPad Pro 12.9" 비율 (1024 x 1366) */
+.frame {
+  width: min(100%, 1024px);
+  max-height: calc(100dvh - 32px);
+  aspect-ratio: 1024 / 1366;
+  background: var(--frame);
+  padding: clamp(18px, 4vw, 72px) clamp(24px, 8vw, 128px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2vh, 30px);
+  overflow: hidden;
+}
+
+/* 탭 */
+.tabs {
+  display: flex;
+  gap: clamp(8px, 1.6vw, 14px);
+  flex-shrink: 0;
+}
+.tab-btn {
+  flex: 1;
+  padding: clamp(10px, 1.6vh, 16px) 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(230, 200, 74, .35);
+  background: rgba(138, 127, 58, .22);
+  color: #e7dfce;
+  font-size: clamp(13px, 1.4vw, 16px);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.tab-btn:hover { border-color: rgba(230, 200, 74, .6); }
+.tab-btn.active {
+  background: var(--bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* 패널 */
+.panel {
+  display: none;
+  flex-direction: column;
+  gap: inherit;
+  min-height: 0;
+}
+.panel.active { display: flex; }
+
+/* 검색창 */
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--pill);
+  border-radius: 999px;
+  height: clamp(40px, 5.2vh, 64px);
+  padding: 0;
+  flex-shrink: 0;
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: clamp(15px, 1.6vw, 20px);
+  color: var(--pill-text);
+  text-align: center;
+  padding: 0 clamp(36px, 4vw, 52px); /* 양쪽 여백을 같게 해서 가운데 정렬 유지 */
+}
+.search input::placeholder { color: var(--placeholder); }
+.search button {
+  position: absolute; right: clamp(8px, 1.4vw, 20px);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+}
+.search svg { width: 22px; height: 22px; }
+
+/* 리스트 (검색결과 / 즐겨찾기 / 추천) */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--row-gap);
+  min-height: calc(3 * var(--row-h) + 2 * var(--row-gap) + 4px);
+  max-height: calc(4 * var(--row-h) + 3 * var(--row-gap) + 4px);
+  overflow-y: auto;
+  flex: 0 1 auto;
+  padding: 2px;
+}
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: var(--row-h);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 14px;
+  padding: 0 clamp(14px, 2vw, 22px);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.list-item:hover, .list-item.active-item {
+  border-color: var(--accent);
+  background: rgba(230, 200, 74, .08);
+}
+.list-item .title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #f1ebe1;
+  font-size: clamp(14px, 1.5vw, 17px);
+}
+.star-btn {
+  flex-shrink: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+}
+.star-btn svg { width: 100%; height: 100%; fill: var(--accent); transition: fill .15s; }
+.star-btn.is-fav svg { fill: var(--fav); }
+
+.empty {
+  padding: clamp(14px, 2.4vh, 22px);
+  text-align: center;
+  color: var(--placeholder);
+  font-size: clamp(14px, 1.5vw, 17px);
+  border: 1px dashed rgba(255, 255, 255, .16);
+  border-radius: 14px;
+}
+
+/* 플레이어 */
+.player {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--player-bg);
+  border: 1px solid var(--player-border);
+  border-radius: 20px;
+  overflow: hidden;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.player .play {
+  border: 0; background: none; cursor: pointer;
+  width: 22%; aspect-ratio: 1; display: grid; place-items: center;
+  transition: transform .15s;
+}
+.player .play:hover { transform: scale(1.08); }
+.player .play svg { width: 70%; }
+.player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.hint { color: #a89d95; font-size: 13px; text-align: center; flex-shrink: 0; }
+.hint a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+@media (max-width: 560px) {
+  body {
+    align-items: flex-start;
+    padding: 12px 10px;
+  }
+
+  .frame {
+    width: 100%;
+    aspect-ratio: auto;
+    height: calc(100dvh - 24px);
+    max-height: none;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .tab-btn {
+    padding: 9px 6px;
+    font-size: 13px;
+  }
+
+  .search {
+    height: 44px;
+  }
+
+  .search input {
+    font-size: 15px;
+    padding: 0 36px;
+  }
+
+  .list-item {
+    padding: 0 14px;
+  }
+
+  .player {
+    min-height: 180px;
+    border-radius: 16px;
+  }
+
+  .player .play {
+    width: 24%;
+  }
+
+  .hint {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 360px) {
+  .frame {
+    padding: 12px 12px 14px;
+  }
+
+  .search input {
+    font-size: 14px;
+  }
+
+  .list-item .title {
+    font-size: 13px;
+  }
+}
+
+/* API 키 입력 */
+dialog {
+  margin: auto;
+  border: 0; border-radius: 20px; padding: 24px; width: min(420px, 90vw);
+  background: var(--pill); color: var(--pill-text);
+}
+dialog::backdrop { background: rgba(0,0,0,.55); }
+dialog h2 { font-size: 18px; margin-bottom: 8px; }
+dialog p { font-size: 13px; color: #6d645d; line-height: 1.5; margin-bottom: 14px; }
+dialog input {
+  width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid #d9cdbd;
+  font-size: 14px; margin-bottom: 14px; background: #fff;
+}
+dialog .row { display: flex; gap: 8px; justify-content: flex-end; }
+dialog button {
+  border: 0; border-radius: 999px; padding: 8px 18px; font-size: 14px; cursor: pointer;
+}
+dialog .primary { background: var(--frame); color: var(--pill); }
+dialog .ghost { background: transparent; color: #6d645d; }
