@@ -21,9 +21,12 @@ body {
   align-items: center;
   padding: clamp(12px, 2vw, 24px) clamp(10px, 2vw, 16px);
 }
+/* React 루트 div가 레이아웃에 끼지 않게 해서 .frame이 body의 flex 아이템이 되도록 */
+#root { display: contents; }
 /* iPad Pro 12.9" 비율 (1024 x 1366) */
 .frame {
   width: min(100%, 1024px);
+  min-width: 0; /* 긴 제목(nowrap) 때문에 flex 아이템이 화면보다 넓어지는 것 방지 */
   max-height: calc(100dvh - 32px);
   aspect-ratio: 1024 / 1366;
   background: var(--frame);
